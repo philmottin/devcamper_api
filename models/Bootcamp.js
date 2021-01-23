@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-//const slugify = require('slugify');
+const slugify = require('slugify');
 //const geocoder = require('../utils/geocoder');
 
 const BootcampSchema = new mongoose.Schema({
@@ -98,6 +98,16 @@ const BootcampSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+// Create bootcamp slug from the name
+// Do not use arrow function here. Arrow functions handles 'this' keyword differently
+BootcampSchema.pre('save', function (next) {
+  //console.log('Slugfy ran', this.name);
+  this.slug = slugify(this.name, {
+    lower: true,
+  });
+  next();
 });
 
 module.exports = mongoose.model('Bootcamp', BootcampSchema);

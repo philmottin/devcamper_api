@@ -2,6 +2,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const geocoder = require('../utils/geocoder');
 const Bootcamp = require('../models/Bootcamp');
+const { Query } = require('mongoose');
 
 // @desc      Get all bootcamps
 // @route     GET /api/v1/bootcamps
@@ -9,16 +10,47 @@ const Bootcamp = require('../models/Bootcamp');
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
   //console.log(req.query);
   let query;
-  let queryStr = JSON.stringify(req.query);
+
+  // Copy req.query
+  const reqQuery = { ...req.query };
+
+  // Fields to exclude
+  const removeFields = ['select', 'sort'];
+
+  // Loop over removeFields and delete them from reqQuery
+  removeFields.forEach((param) => delete reqQuery[param]);
+
+  console.log(reqQuery);
+
+  // Create query string. Convert to string in order to use replace
+  let queryStr = JSON.stringify(reqQuery);
+
+  // Add $ in front of gt|gte|lt|lte|in to create operators ($gt, $gte, etc)
   queryStr = queryStr.replace(
     /\b(gt|gte|lt|lte|in)\b/g,
     (match) => `$${match}`
   );
   //console.log(queryStr);
 
+  // Finding resource (parse back to json object)
   query = Bootcamp.find(JSON.parse(queryStr));
 
-  //const bootcamps = await Bootcamp.find();
+  // Select fields
+  if (req.query.select) {
+    const fields = req.query.select.split(',').join(' ');
+    //console.log(fields);
+    query = query.select(fields);
+  }
+
+  // Sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ');
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort('-createdAt');
+  }
+
+  // Executing query
   const bootcamps = await query;
 
   res.status(200).json({

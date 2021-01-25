@@ -1,7 +1,7 @@
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const Course = require('../models/Course');
-const { QueryCursor } = require('mongoose');
+//const { QueryCursor } = require('mongoose');
 
 // @desc      Get courses
 // @route     GET /api/v1/courses

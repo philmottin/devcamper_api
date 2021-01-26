@@ -119,6 +119,7 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 // @access    Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+    // return new version of the bootcamp, after the update
     new: true,
     runValidators: true,
   });

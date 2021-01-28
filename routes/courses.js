@@ -8,13 +8,13 @@ const {
 } = require('../controllers/courses');
 
 const Course = require('../models/Course');
-const advancedResults = require('../middleware/advancedResults');
 
 // mergeParams:
 // Preserve the req.params values from the parent router.
 // If the parent and the child have conflicting param names, the child’s value take precedence.
 const router = express.Router({ mergeParams: true });
 
+const advancedResults = require('../middleware/advancedResults');
 const { protect, authorize } = require('../middleware/auth');
 
 router
